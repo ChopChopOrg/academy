@@ -2,7 +2,7 @@
 name: I'd like to listen
 about: We're open to your ideas
 title: ''
-labels: ''
+labels: talk idea
 assignees: ''
 
 ---
