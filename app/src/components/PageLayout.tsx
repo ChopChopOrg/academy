@@ -1,4 +1,8 @@
 /** @jsx jsx */
+
+// focus visible polyfill
+import "focus-visible/dist/focus-visible.min";
+
 import { jsx, Global } from "@emotion/core";
 import React from "react";
 import styled from "@emotion/styled";
@@ -22,14 +26,20 @@ const PageContainer = styled.div`
 const PageHeader = styled.header`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 
   box-shadow: 0 0 25px ${theme.colors.shadow};
   padding: 1em;
+
+  ${theme.mediaQueries.small} {
+    flex-direction: column;
+  }
 `;
 
 const NavLink = styled.a`
   margin-left: 1em;
   text-decoration: none;
+  display: block;
 
   color: ${theme.colors.black};
 
@@ -51,7 +61,20 @@ export const PageLayout: React.FC = ({ children }) => {
             </span>{" "}
             Todo App
           </em>
-          <nav>
+          <nav
+            css={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              [theme.mediaQueries.small]: {
+                flexDirection: "column",
+                a: {
+                  width: "100%",
+                  marginLeft: 0,
+                },
+              },
+            }}
+          >
             <NavLink href="https://chop-chop.org/academy-web-apps">
               Chop-Chop Academy
             </NavLink>
@@ -63,7 +86,7 @@ export const PageLayout: React.FC = ({ children }) => {
             </NavLink>
           </nav>
         </PageHeader>
-        <main css={{ minHeight: "75vh" }}>{children}</main>
+        <main css={{ minHeight: "90vh" }}>{children}</main>
         <footer
           css={{
             padding: "2em",
@@ -77,6 +100,16 @@ export const PageLayout: React.FC = ({ children }) => {
               flexDirection: "row",
               margin: 0,
               padding: 0,
+              [theme.mediaQueries.small]: {
+                flexDirection: "column",
+                li: {
+                  marginBottom: "1em",
+                  a: {
+                    width: "100%",
+                    marginLeft: 0,
+                  },
+                },
+              },
             }}
           >
             <li>
