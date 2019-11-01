@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from '@emotion/styled';
+import React from "react";
+import styled from "@emotion/styled";
 
 const BoxWrapper = styled.div`
   width: 600px;
@@ -10,6 +10,6 @@ const BoxWrapper = styled.div`
   box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
 `;
 
-export const Box = ({ children }) => {
+export const Box: React.FC = ({ children }) => {
   return <BoxWrapper>{children}</BoxWrapper>;
 };

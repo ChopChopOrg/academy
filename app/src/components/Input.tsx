@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import styled from "@emotion/styled";
-import PropTypes from "prop-types";
 
 const Wrapper = styled.div`
   display: flex;
@@ -11,7 +10,10 @@ const StyledInput = styled.input`
   margin-right: 10px;
 `;
 
-export const Input = ({ onAdd }) => {
+interface InputProps {
+  onAdd: (value: string) => void;
+}
+export const Input: React.FC<InputProps> = ({ onAdd }) => {
   const [text, setText] = useState("");
 
   const handleChange = useCallback(e => {
@@ -26,11 +28,9 @@ export const Input = ({ onAdd }) => {
   return (
     <Wrapper>
       <StyledInput value={text} onChange={handleChange} />
-      <button onClick={handleAdd}>Add!</button>
+      <button type="button" onClick={handleAdd}>
+        Add!
+      </button>
     </Wrapper>
   );
-};
-
-Input.propTypes = {
-  onAdd: PropTypes.func.isRequired,
 };

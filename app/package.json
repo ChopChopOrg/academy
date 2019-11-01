@@ -3,17 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "dev": "next",
+    "build": "next export",
     "lint": "eslint src/**/*",
+    "typecheck": "tsc --noEmit",
     "prettier-check": "prettier --check src/**/*"
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-push": "yarn lint"
+      "pre-push": "yarn lint && yarn typecheck"
     }
   },
   "lint-staged": {
@@ -37,17 +36,19 @@
   "dependencies": {
     "@emotion/core": "^10.0.21",
     "@emotion/styled": "^10.0.17",
-    "prop-types": "^15.7.2",
     "react": "^16.10.2",
-    "react-dom": "^16.10.2",
-    "react-scripts": "3.2.0"
+    "react-dom": "^16.10.2"
   },
   "devDependencies": {
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.3",
     "babel-plugin-emotion": "^10.0.21",
     "eslint": "^6.6.0",
     "eslint-config-chop-chop": "^1.2.1",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.2",
-    "prettier": "^1.18.2"
+    "next": "^9.1.2",
+    "prettier": "^1.18.2",
+    "typescript": "^3.6.4"
   }
 }
