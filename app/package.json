@@ -10,6 +10,12 @@
     "lint": "eslint src/**/*",
     "prettier-check": "prettier --check src/**/*"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn lint"
+    }
+  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "prettier --write",
@@ -40,6 +46,7 @@
     "babel-plugin-emotion": "^10.0.21",
     "eslint": "^6.6.0",
     "eslint-config-chop-chop": "^1.2.1",
+    "husky": "^3.0.9",
     "lint-staged": "^9.4.2",
     "prettier": "^1.18.2"
   }
