@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
+import React, { useState, useCallback } from "react";
+import styled from "@emotion/styled";
+import PropTypes from "prop-types";
 
 const Wrapper = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ const StyledInput = styled.input`
 `;
 
 export const Input = ({ onAdd }) => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
 
   const handleChange = useCallback(e => {
     setText(e.target.value);
@@ -20,8 +20,8 @@ export const Input = ({ onAdd }) => {
 
   const handleAdd = useCallback(() => {
     onAdd(text);
-    setText('');
-  }, [text]);
+    setText("");
+  }, [text, onAdd]);
 
   return (
     <Wrapper>
@@ -32,5 +32,5 @@ export const Input = ({ onAdd }) => {
 };
 
 Input.propTypes = {
-  onAdd: PropTypes.func.isRequired
+  onAdd: PropTypes.func.isRequired,
 };
