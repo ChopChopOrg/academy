@@ -1,5 +1,7 @@
 # Chop-Chop Academy
 
+You can see the app we're building during the live-coding at https://chop-chop-academy.netlify.com/
+
 ### Links
 
 - meetup.com — https://www.meetup.com/pl-PL/Chop-Chop-Academy-Web-Apps/
