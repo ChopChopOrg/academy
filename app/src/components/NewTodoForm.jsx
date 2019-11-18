@@ -6,13 +6,17 @@ import styled from "@emotion/styled";
 import { Button } from "./Button";
 import { theme } from "../theme";
 
-const { shadow, blue } = theme.colors;
+const {
+  colors: { shadow, blue },
+  borderRadius,
+  mediaQueries,
+} = theme;
 
 const Form = styled.form`
   display: flex;
   flex-wrap: wrap;
   border: 1px dashed ${shadow};
-  border-radius: 10px;
+  border-radius: ${borderRadius.big};
   padding: 1em;
 
   > * {
@@ -26,7 +30,7 @@ const Input = styled.input`
   font-size: inherit;
   padding: 0.7em 1em;
   border: 1px dashed ${shadow};
-  border-radius: 3px;
+  border-radius: ${borderRadius.small};
 
   flex: 1 1 auto;
 
@@ -63,9 +67,19 @@ export const NewTodoForm = ({ onAdd }) => {
         value={text}
         onChange={handleChange}
         placeholder="Do something awesome!"
-        css={{ marginRight: "0.5em" }}
+        css={{
+          marginRight: "0.5em",
+          [mediaQueries.small]: { marginRight: 0 },
+        }}
       />
-      <Button type="submit">Add Todo</Button>
+      <Button
+        type="submit"
+        css={{
+          [mediaQueries.small]: { marginLeft: "auto" },
+        }}
+      >
+        Add Todo
+      </Button>
     </Form>
   ));
 };

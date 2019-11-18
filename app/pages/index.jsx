@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import Head from "next/head";
 
 import { PageLayout, NewTodoForm, TodoList } from "../src/components";
+import { theme } from "../src/theme";
 
 const Index = () => {
   const [items, setItems] = useState(["build a todo app"]);
@@ -34,6 +35,9 @@ const Index = () => {
           padding: "1em",
           width: "80ch",
           maxWidth: "100%",
+          [theme.mediaQueries.small]: {
+            padding: 4,
+          },
         }}
       >
         <h1>Todo List</h1>

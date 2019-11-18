@@ -3,16 +3,25 @@
 // focus visible polyfill
 import "focus-visible/dist/focus-visible.min";
 
-import { jsx, Global } from "@emotion/core";
+import { jsx, css, Global } from "@emotion/core";
 import React from "react";
 import styled from "@emotion/styled";
 
 import { theme } from "../theme";
 
-const globalStyles = {
-  "html, body, #__next": { height: "100%" },
-  body: { margin: 0 },
-};
+const globalStyles = css`
+  html,
+  body,
+  #__next {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+  }
+  * {
+    box-sizing: border-box;
+  }
+`;
 
 const PageContainer = styled.div`
   color: ${theme.colors.black};
@@ -28,7 +37,7 @@ const PageHeader = styled.header`
   flex-direction: row;
   flex-wrap: wrap;
 
-  box-shadow: 0 0 25px ${theme.colors.shadow};
+  border-bottom: 1px solid ${theme.colors.shadow};
   padding: 1em;
 
   ${theme.mediaQueries.small} {
@@ -42,6 +51,7 @@ const NavLink = styled.a`
   display: block;
 
   color: ${theme.colors.black};
+  outline-color: ${theme.colors.blue};
 
   :focus,
   :hover {
@@ -55,7 +65,13 @@ export const PageLayout: React.FC = ({ children }) => {
       <Global styles={globalStyles} />
       <PageContainer>
         <PageHeader>
-          <em css={{ fontStyle: "normal", display: "block", flex: 1 }}>
+          <em
+            css={{
+              fontStyle: "normal",
+              display: "block",
+              flex: 1,
+            }}
+          >
             <span role="img" aria-label="">
               ✅
             </span>{" "}

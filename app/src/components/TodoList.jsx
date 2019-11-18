@@ -4,42 +4,48 @@ import { useState } from "react";
 
 import { theme } from "../theme";
 
-const { shadow, black } = theme.colors;
+const {
+  colors: { shadow, black, blue },
+  borderRadius,
+} = theme;
 
 /**
  * @type {React.FC<React.ComponentProps<"button">>}
  */
 const Todo = ({ children, ...rest }) => {
   const [focused, setFocused] = useState(false);
-
-  const focus = () => setFocused(true);
-  const defocus = () => setFocused(false);
+  const [hovered, setHovered] = useState(false);
 
   return ((
     <button
-      onMouseEnter={focus}
-      onMouseOut={defocus}
-      onBlur={defocus}
-      onFocus={focus}
+      onBlur={() => setFocused(false)}
+      onFocus={() => setFocused(true)}
+      onPointerOut={() => setHovered(false)}
+      onPointerEnter={() => setHovered(true)}
       type="button"
       css={[
         css`
           width: 100%;
           background: none;
           border: 1px dashed ${shadow};
+          border-radius: ${borderRadius.small};
           padding: 1em;
           font-family: inherit;
           font-size: inherit;
           text-align: left;
           cursor: pointer;
+          outline-color: ${blue};
         `,
-        focused && {
+        (focused || hovered) && {
           borderColor: black,
+          borderStyle: "solid",
         },
       ]}
       {...rest}
     >
-      <span css={{ marginRight: "0.5em" }}>{focused ? "✅" : "⬜"}</span>
+      <span css={{ marginRight: "0.5em" }}>
+        {focused || hovered ? "✅" : "⬜"}
+      </span>
       {children}
     </button>
   ));
@@ -55,7 +61,7 @@ export const TodoList = ({ items, onItemClick }) => {
   return ((
     <ul css={{ padding: 0 }}>
       {items.map(item => (
-        <li key={item} css={{ listStyle: "none" }}>
+        <li key={item} css={{ listStyle: "none", marginBottom: "0.5em" }}>
           <Todo onClick={() => onItemClick(item)}>{item}</Todo>
         </li>
       ))}

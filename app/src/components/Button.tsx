@@ -4,7 +4,11 @@ import React, { ComponentProps } from "react";
 
 import { theme } from "../theme";
 
-const { shadow, yellow, black } = theme.colors;
+const {
+  colors: { shadow, yellow, black },
+  borderRadius,
+  boxShadow,
+} = theme;
 
 interface ButtonProps extends ComponentProps<"button"> {}
 export const Button: React.FC<ButtonProps> = props => (
@@ -19,12 +23,9 @@ export const Button: React.FC<ButtonProps> = props => (
       padding: 0.7em 1em 1em 1em;
       border: 1px solid ${shadow};
       cursor: pointer;
-      border-radius: 3px;
+      border-radius: ${borderRadius.small};
       transition: all 0.3s ease-out;
-      box-shadow: inset 0 -8px 0 0 rgba(0, 0, 0, 0.2), 1px 1px 0 0 ${shadow},
-        2px 2px 0 0 ${shadow}, 3px 3px 0 0 ${shadow}, 4px 4px 0 0 ${shadow},
-        5px 5px 0 0 ${shadow}, 6px 6px 0 0 ${shadow}, 7px 7px 0 0 ${shadow},
-        8px 8px 0 0 ${shadow}, 9px 9px 0 0 ${shadow}, 10px 10px 0 0 ${shadow};
+      box-shadow: ${boxShadow.highInset}, ${boxShadow.highOuter};
 
       :focus {
         outline: none;
@@ -36,9 +37,7 @@ export const Button: React.FC<ButtonProps> = props => (
       }
 
       :active {
-        box-shadow: inset 0 -4px 0 0 rgba(0, 0, 0, 0.2), 1px 1px 0 0 ${shadow},
-          2px 2px 0 0 ${shadow}, 3px 3px 0 0 ${shadow}, 4px 4px 0 0 ${shadow},
-          5px 5px 0 0 ${shadow};
+        box-shadow: ${boxShadow.lowInset}, ${boxShadow.lowOuter};
       }
     `}
     {...props}
