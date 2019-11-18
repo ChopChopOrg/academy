@@ -33,23 +33,31 @@ const Input = styled.input`
   outline-color: ${blue};
 `;
 
-interface NewTodoFormProps {
-  onAdd: (value: string) => void;
-}
-export const NewTodoForm: React.FC<NewTodoFormProps> = ({ onAdd }) => {
+/**
+ * @type {React.FC<{
+ *   onAdd: (value: string) => void;
+ * }>}
+ */
+export const NewTodoForm = ({ onAdd }) => {
   const [text, setText] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * @type {React.ChangeEventHandler<HTMLInputElement>}
+   */
+  const handleChange = e => {
     setText(e.target.value);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  /**
+   * @param {React.FormEvent} event
+   */
+  const handleSubmit = event => {
     event.preventDefault();
     onAdd(text);
     setText("");
   };
 
-  return (
+  return ((
     <Form onSubmit={handleSubmit}>
       <Input
         value={text}
@@ -59,5 +67,5 @@ export const NewTodoForm: React.FC<NewTodoFormProps> = ({ onAdd }) => {
       />
       <Button type="submit">Add Todo</Button>
     </Form>
-  );
+  ));
 };

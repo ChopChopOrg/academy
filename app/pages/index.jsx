@@ -6,17 +6,17 @@ import Head from "next/head";
 import { PageLayout, NewTodoForm, TodoList } from "../src/components";
 
 const Index = () => {
-  const [items, setItems] = useState<string[]>(["build a todo app"]);
+  const [items, setItems] = useState(["build a todo app"]);
 
   const handleAdd = useCallback(
-    (text: string) => {
+    text => {
       setItems([...items, text]);
     },
     [items]
   );
 
   const handleItemClick = useCallback(
-    (item: string) => {
+    item => {
       const copy = [...items];
       const index = items.indexOf(item);
       copy.splice(index, 1);

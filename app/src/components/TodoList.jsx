@@ -1,18 +1,21 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/core";
-import { ComponentProps, useState } from "react";
+import { useState } from "react";
 
 import { theme } from "../theme";
 
 const { shadow, black } = theme.colors;
 
-const Todo = ({ children, ...rest }: ComponentProps<"button">) => {
+/**
+ * @type {React.FC<React.ComponentProps<"button">>}
+ */
+const Todo = ({ children, ...rest }) => {
   const [focused, setFocused] = useState(false);
 
   const focus = () => setFocused(true);
   const defocus = () => setFocused(false);
 
-  return (
+  return ((
     <button
       onMouseEnter={focus}
       onMouseOut={defocus}
@@ -39,15 +42,17 @@ const Todo = ({ children, ...rest }: ComponentProps<"button">) => {
       <span css={{ marginRight: "0.5em" }}>{focused ? "✅" : "⬜"}</span>
       {children}
     </button>
-  );
+  ));
 };
 
-interface TodoListProps {
-  items: string[];
-  onItemClick: (item: string) => void;
-}
-export const TodoList = ({ items, onItemClick }: TodoListProps) => {
-  return (
+/**
+ * @type {React.FC<{
+ *   items: string[];
+ *   onItemClick: (item: string) => void;
+ * }>}
+ */
+export const TodoList = ({ items, onItemClick }) => {
+  return ((
     <ul css={{ padding: 0 }}>
       {items.map(item => (
         <li key={item} css={{ listStyle: "none" }}>
@@ -55,5 +60,5 @@ export const TodoList = ({ items, onItemClick }: TodoListProps) => {
         </li>
       ))}
     </ul>
-  );
+  ));
 };
