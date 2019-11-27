@@ -28,7 +28,9 @@ const Index = () => {
 
   return (
     <PageLayout>
-      <Head>Todo App</Head>
+      <Head>
+        <title>Todo App ▪ Chop-Chop Academy</title>
+      </Head>
       <div
         css={{
           margin: "auto",

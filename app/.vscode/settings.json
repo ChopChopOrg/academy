@@ -6,8 +6,8 @@
   // "workbench.colorTheme": "Min Light",
 
   // make it big
-  // "editor.fontSize": 24, // <
-  // "editor.lineHeight": 34, // <
+  "editor.fontSize": 24, // <
+  "editor.lineHeight": 34, // <
   // "editor.fontWeight": "500", // <
   // "terminal.integrated.fontWeight": "500",
   // "terminal.integrated.fontSize": 22,
@@ -29,7 +29,6 @@
     "editor.formatOnSave": false
   },
 
-  // need this one for 04.ts and 05.ts
   "typescript.tsdk": "node_modules/typescript/lib",
   "typelens.showReferencesForClasses": false,
   "prettier.printWidth": 60
