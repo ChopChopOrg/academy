@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { theme } from "../theme";
 
 const {
-  colors: { blue, yellow },
+  colors: { blue },
 } = theme;
 
 export const A = styled.a`
