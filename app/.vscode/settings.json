@@ -3,11 +3,11 @@
   // Just comment them while developing
 
   // similar to GitHub theme
-  // "workbench.colorTheme": "Min Light",
+  // "workbench.colorTheme": "GitHub Plus",
 
   // make it big
-  "editor.fontSize": 24, // <
-  "editor.lineHeight": 34, // <
+  // "editor.fontSize": 24, // <
+  // "editor.lineHeight": 34, // <
   // "editor.fontWeight": "500", // <
   // "terminal.integrated.fontWeight": "500",
   // "terminal.integrated.fontSize": 22,
@@ -16,8 +16,8 @@
   "window.title": "${dirty} Chop-Chop Academy${separator}${activeEditorShort}",
   "window.menuBarVisibility": "hidden",
   "editor.renderIndentGuides": false,
-  "workbench.statusBar.visible": false,
-  "workbench.activityBar.visible": false,
+  // "workbench.statusBar.visible": false,
+  // "workbench.activityBar.visible": false,
   "typescript.referencesCodeLens.enabled": false,
   "typescript.implementationsCodeLens.enabled": false,
 
@@ -30,6 +30,5 @@
   },
 
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typelens.showReferencesForClasses": false,
-  "prettier.printWidth": 60
+  "typelens.showReferencesForClasses": false
 }

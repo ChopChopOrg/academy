@@ -36,10 +36,9 @@ const Todo = ({ children, ...rest }) => {
           cursor: pointer;
           outline-color: ${blue};
         `,
-        (focused || hovered) && {
-          borderColor: black,
-          borderStyle: "solid",
-        },
+        (hovered || focused) && { borderStyle: "solid" },
+        hovered && { borderColor: black },
+        focused && { borderColor: shadow },
       ]}
       {...rest}
     >

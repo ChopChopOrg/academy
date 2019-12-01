@@ -4,8 +4,9 @@
 import "focus-visible/dist/focus-visible.min";
 
 import { jsx, css, Global } from "@emotion/core";
-import React from "react";
+import React, { ComponentProps } from "react";
 import styled from "@emotion/styled";
+import Link from "next/link";
 
 import { theme } from "../theme";
 
@@ -28,8 +29,9 @@ const PageContainer = styled.div`
   background: ${theme.colors.white};
 
   font-size: 20px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
 `;
 
 const PageHeader = styled.header`
@@ -38,7 +40,6 @@ const PageHeader = styled.header`
   flex-wrap: wrap;
 
   border-bottom: 1px solid ${theme.colors.shadow};
-  padding: 1em;
 
   ${theme.mediaQueries.small} {
     flex-direction: column;
@@ -46,37 +47,42 @@ const PageHeader = styled.header`
 `;
 
 const NavLink = styled.a`
-  margin-left: 1em;
+  padding: 1em;
   text-decoration: none;
   display: block;
 
   color: ${theme.colors.black};
   outline-color: ${theme.colors.blue};
+  cursor: pointer;
 
-  :focus,
   :hover {
     text-decoration: underline;
   }
 `;
 
-export const PageLayout: React.FC = ({ children }) => {
+interface PageLayoutProps {
+  children: React.ReactNode;
+}
+export function PageLayout({ children }: PageLayoutProps) {
   return (
     <>
       <Global styles={globalStyles} />
       <PageContainer>
         <PageHeader>
-          <em
-            css={{
-              fontStyle: "normal",
-              display: "block",
-              flex: 1,
-            }}
-          >
-            <span role="img" aria-label="">
-              ✅
-            </span>{" "}
-            Todo App
-          </em>
+          <Link href="/">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <NavLink
+              css={{ ":hover": { textDecoration: "none" } }}
+            >
+              <em css={{ fontStyle: "normal" }}>
+                <span role="img" aria-label="">
+                  ✅
+                </span>{" "}
+                Todo App
+              </em>
+            </NavLink>
+          </Link>
+          <div css={{ flex: 1 }} />
           <nav
             css={{
               display: "flex",
@@ -129,7 +135,9 @@ export const PageLayout: React.FC = ({ children }) => {
             }}
           >
             <li>
-              <NavLink href="https://chop-chop.org/">Chop-Chop Academy</NavLink>
+              <NavLink href="https://chop-chop.org/">
+                Chop-Chop Academy
+              </NavLink>
             </li>
             <li>
               <NavLink href="https://github.com/ChopChopOrg/academy">
@@ -146,4 +154,22 @@ export const PageLayout: React.FC = ({ children }) => {
       </PageContainer>
     </>
   );
-};
+}
+
+const PageLayoutMargin: React.FC<
+  ComponentProps<"div">
+> = props => (
+  <div
+    css={{
+      margin: "auto",
+      padding: "1em",
+      width: "80ch",
+      maxWidth: "100%",
+      [theme.mediaQueries.small]: {
+        padding: 4,
+      },
+    }}
+    {...props}
+  />
+);
+PageLayout.Margin = PageLayoutMargin;
