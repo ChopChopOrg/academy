@@ -221,7 +221,7 @@ const Checkmarks = ({ checkmarks }) => {
  * }} PomodoroAction
  * @type {React.Reducer<PomodoroState, PomodoroAction>}
  */
-const pomodoroReducer = (s, action) => {
+export const pomodoroReducer = (s, action) => {
   switch (action.type) {
     case "start-work":
       return {
@@ -283,7 +283,7 @@ const pomodoroReducer = (s, action) => {
 };
 
 /** @type {PomodoroState} */
-const initialState = {
+export const initialState = {
   currentTimespan: "interaction",
   checkmarks: 0,
   timer: null,
