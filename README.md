@@ -10,9 +10,11 @@ You can see the app we're building during the live-coding at https://chop-chop-a
 ### Past Meetups
 
 0. **Intro to React**: live coding of a todo app \
-  [@drlech](https://github.com/drlech)
+  Speaker: [@drlech](https://github.com/drlech)
 1. **Deeper into React**: useReducer, useEffect, live coding of a pomodoro timer \
-  [@hasparus](https://github.com/hasparus)
+  Speaker: [@hasparus](https://github.com/hasparus)
+    - Started live coding from [deeper-into-react-prep](https://github.com/ChopChopOrg/academy/tree/deeper-into-react-prep) branch
+    - Ended on [5763cee](https://github.com/ChopChopOrg/academy/commit/5763ceee363da1e2455dd3197f55830b15cf88f9)
 
 ## FAQ
 
