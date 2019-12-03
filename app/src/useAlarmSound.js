@@ -42,18 +42,22 @@ export function useAlarmSound(soundUrl) {
     }
   }, [soundUrl]);
 
-  return useMemo(async function playAlarmSound() {
-    return (
-      buffer.current &&
-      buffer.current.then(buf => {
-        const ctx = audioCtx.current;
-        if (ctx && buf) {
-          const source = ctx.createBufferSource();
-          source.buffer = buf;
-          source.connect(ctx.destination);
-          source.start();
-        }
-      })
-    );
-  }, []);
+  return useMemo(
+    () =>
+      async function playAlarmSound() {
+        return (
+          buffer.current &&
+          buffer.current.then(buf => {
+            const ctx = audioCtx.current;
+            if (ctx && buf) {
+              const source = ctx.createBufferSource();
+              source.buffer = buf;
+              source.connect(ctx.destination);
+              source.start();
+            }
+          })
+        );
+      },
+    []
+  );
 }
