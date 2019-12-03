@@ -5,7 +5,7 @@ import React, { ComponentProps } from "react";
 import { theme } from "../theme";
 
 const {
-  colors: { shadow, yellow, black, blue },
+  colors: { shadow, yellow, black, blue, gray },
   borderRadius,
   boxShadow,
 } = theme;
@@ -19,20 +19,25 @@ const _3dStyles = css`
   font-size: inherit;
   font-weight: bold;
 
-  cursor: pointer;
-
   background: ${yellow};
   border: 1px solid ${shadow};
   border-radius: ${borderRadius.small};
   padding: 0.7em 1em 1em 1em;
 
-  :focus {
-    outline: none;
-    border-color: ${black};
-  }
+  :enabled {
+    cursor: pointer;
 
-  :focus:not([data-focus-visible-added]) {
-    border-color: ${shadow};
+    :focus {
+      outline: none;
+      border-color: ${black};
+    }
+
+    :focus:not([data-focus-visible-added]) {
+      border-color: ${shadow};
+    }
+  }
+  :disabled {
+    background-color: ${gray};
   }
 `;
 
