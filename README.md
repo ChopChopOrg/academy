@@ -7,6 +7,13 @@ You can see the app we're building during the live-coding at https://chop-chop-a
 - meetup.com — https://www.meetup.com/pl-PL/Chop-Chop-Academy-Web-Apps/
   <!-- - chop-chop.org/academy — https://chop-chop.org/academy -->
 
+### Past Meetups
+
+0. Intro to React: live coding of a todo app
+  @drlech
+1. Deeper into React: useReducer, useEffect, live coding of a pomodoro timer
+  @hasparus
+
 ## FAQ
 
 <!-- TOC -->
