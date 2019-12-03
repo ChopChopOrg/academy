@@ -3,7 +3,12 @@ import { jsx } from "@emotion/core";
 import styled from "@emotion/styled";
 import Head from "next/head";
 import { useBoolean, useInput } from "react-hanger";
-import { useReducer, useEffect, useRef } from "react";
+import {
+  useReducer,
+  useEffect,
+  useRef,
+  useMemo,
+} from "react";
 
 import { Button } from "../src/components/Button";
 import { PageLayout } from "../src/components";
@@ -14,8 +19,24 @@ import { BigText } from "../src/components/BigText";
 import { useAlarmSound } from "../src/useAlarmSound";
 import { notify } from "../src/notify";
 
+const WORK_MINUTES = 25;
+
+/**
+ * @param {number} seconds
+ */
+const formatRemainingTime = seconds => {
+  const minutes = Math.floor(seconds / 60);
+
+  const [minutesText, secondsText] = [
+    minutes,
+    seconds % 60,
+  ].map(x => String(x).padStart(2, "0"));
+
+  return `${minutesText}:${secondsText}`;
+};
+
 const {
-  colors: { shadow, yellow },
+  colors: { shadow, gray },
 } = theme;
 
 /**
@@ -29,12 +50,12 @@ const PomodoroEmoji = props => (
 
 /**
  * @param {{
- *   minutes: number,
+ *   seconds: number,
  *   children: React.ReactNode,
  * } & import("../src/components/Button").ButtonProps} props
  */
 const LabeledButton = ({
-  minutes,
+  seconds,
   children,
   disabled,
   ...rest
@@ -61,11 +82,12 @@ const LabeledButton = ({
         css={{
           marginLeft: "1em",
           width: "6em",
-          backgroundColor: disabled ? "gray" : yellow,
         }}
         {...rest}
       >
-        {minutes} min
+        {seconds > 60
+          ? `${Math.round(seconds / 60)} min`
+          : `${seconds} sec`}
       </Button>
     </label>
   );
@@ -89,21 +111,72 @@ const LearnMoreSection = props => ((
 ));
 
 const usePomodoroSettings = () => {
-  const shortBreakTime = useInput(5);
-  const longBreakTime = useInput(15);
+  const persisted = useMemo(() => {
+    return JSON.parse(
+      (typeof localStorage !== "undefined" &&
+        localStorage.getItem("pomodoro-settings")) ||
+        "{}"
+    );
+  }, []);
+
+  const shortBreakTime = useInput(
+    persisted.shortBreakTime || 5
+  );
+  const longBreakTime = useInput(
+    persisted.longBreakTime || 15
+  );
+  const secondsInsteadOfMinutes = useBoolean(
+    persisted.secondsInsteadOfMinutes || false
+  );
+
+  useEffect(() => {
+    return () => {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(
+          "pomodoro-settings",
+          JSON.stringify({
+            shortBreakTime: shortBreakTime.value,
+            longBreakTime: longBreakTime.value,
+            secondsInsteadOfMinutes:
+              secondsInsteadOfMinutes.value,
+          })
+        );
+      }
+    };
+  }, [
+    shortBreakTime.value,
+    longBreakTime.value,
+    secondsInsteadOfMinutes.value,
+  ]);
+
+  const modifier = secondsInsteadOfMinutes.value ? 1 : 60;
 
   return {
     shortBreakTime,
     longBreakTime,
+    secondsInsteadOfMinutes,
+    getValues() {
+      return {
+        shortBreakSeconds:
+          Number(shortBreakTime.value) * modifier,
+        longBreakSeconds:
+          Number(longBreakTime.value) * modifier,
+        workSeconds: WORK_MINUTES * modifier,
+      };
+    },
   };
 };
 
 /**
- * @param {ReturnType<typeof usePomodoroSettings> & React.ComponentProps<"div">} props
+ * @typedef {ReturnType<typeof usePomodoroSettings>} Settings
+ * @typedef {ReturnType<Settings['getValues']>} SettingsValues
+ * @param {Settings & React.ComponentProps<"div">} props
  */
 const PomodoroSettings = ({
   shortBreakTime,
   longBreakTime,
+  secondsInsteadOfMinutes,
+  getValues: _,
   ...rest
 }) => {
   return (
@@ -139,6 +212,19 @@ const PomodoroSettings = ({
           {...longBreakTime.eventBind}
         />
       </label>
+      <label>
+        Use seconds instead of minutes (useful for
+        debugging):
+        <input
+          type="checkbox"
+          checked={secondsInsteadOfMinutes.value}
+          onChange={e =>
+            secondsInsteadOfMinutes.setValue(
+              e.target.checked
+            )
+          }
+        />
+      </label>
     </div>
   );
 };
@@ -148,15 +234,15 @@ const PomodoroTimerFooter = styled.footer({
 });
 
 /**
- * @param {{ currentTimespan: PomodoroState['currentTimespan'] }} props
+ * @param {{ currentPeriod: PomodoroState['currentPeriod'] }} props
  */
-const PomodoroTimerHeader = ({ currentTimespan }) => {
+const PomodoroTimerHeader = ({ currentPeriod }) => {
   return (
     <header>
       <h2 css={{ textTransform: "capitalize" }}>
         <PomodoroEmoji /> Pomodoro Timer
-        {currentTimespan !== "interaction" &&
-          `: ${currentTimespan.replace("-", " ")}`}
+        {currentPeriod !== "interaction" &&
+          `: ${currentPeriod.replace("-", " ")}`}
       </h2>
     </header>
   );
@@ -177,8 +263,11 @@ const Checkmarks = ({ checkmarks }) => {
 
 /**
  * @see https://en.wikipedia.org/wiki/Pomodoro_Technique
+ *
+ * @typedef {'work' | 'short-break' | 'long-break' | 'interaction'} PomodoroTimePeriod
  * @typedef {{
- *   currentTimespan: 'work' | 'short-break' | 'long-break' | 'interaction',
+ *   previousPeriod: PomodoroTimePeriod,
+ *   currentPeriod: PomodoroTimePeriod,
  *   checkmarks: 0 | 1 | 2 | 3 | 4,
  *   timer: { startedAt: number, remainingTime: number } | null,
  * }} PomodoroState
@@ -195,96 +284,117 @@ const Checkmarks = ({ checkmarks }) => {
  * } | {
  *   type: 'tick'
  * }} PomodoroAction
- * @type {React.Reducer<PomodoroState, PomodoroAction>}
+ * @param {SettingsValues} settings
+ * @returns {React.Reducer<PomodoroState, PomodoroAction>}
  */
-export const pomodoroReducer = (s, action) => {
-  switch (action.type) {
-    case "start-work":
-      return {
-        ...s,
-        currentTimespan: "work",
-        timer: { startedAt: Date.now(), remainingTime: 6 },
-      };
 
-    case "finish-work": {
-      console.assert(s.currentTimespan === "work");
-      return {
-        ...s,
-        currentTimespan: "interaction",
-        checkmarks: incrementCheckmarks(s.checkmarks),
-        timer: null,
-      };
-    }
-
-    case "take-break":
-      console.assert(s.currentTimespan === "interaction");
-      if (s.checkmarks === 4) {
+export function makePomodoroReducer({
+  shortBreakSeconds,
+  longBreakSeconds,
+  workSeconds,
+}) {
+  return function pomodoroReducer(s, action) {
+    switch (action.type) {
+      case "start-work":
         return {
           ...s,
-          currentTimespan: "long-break",
-          checkmarks: 0,
+          previousPeriod: s.currentPeriod,
+          currentPeriod: "work",
           timer: {
             startedAt: Date.now(),
-            remainingTime: 3,
+            remainingTime: workSeconds,
           },
         };
-      }
-      return {
-        ...s,
-        currentTimespan: "short-break",
-        timer: { startedAt: Date.now(), remainingTime: 2 },
-      };
 
-    case "finish-break":
-      console.assert(
-        s.currentTimespan === "short-break" ||
-          s.currentTimespan === "long-break"
-      );
-
-      return {
-        ...s,
-        currentTimespan: "interaction",
-        timer: null,
-      };
-
-    case "abandon":
-      return {
-        currentTimespan: "interaction",
-        checkmarks: 0,
-        timer: null,
-      };
-
-    case "tick":
-      if (!s.timer) {
-        console.error("cant tick");
-        return s;
-      }
-
-      if (s.timer.remainingTime === 0) {
+      case "finish-work": {
+        console.assert(s.currentPeriod === "work");
         return {
           ...s,
+          previousPeriod: s.currentPeriod,
+          currentPeriod: "interaction",
+          checkmarks: incrementCheckmarks(s.checkmarks),
           timer: null,
         };
       }
 
-      return {
-        ...s,
-        timer: {
-          startedAt: s.timer.startedAt,
-          remainingTime: s.timer.remainingTime - 1,
-        },
-      };
+      case "take-break":
+        console.assert(s.currentPeriod === "interaction");
+        if (s.checkmarks === 4) {
+          return {
+            ...s,
+            previousPeriod: s.currentPeriod,
+            currentPeriod: "long-break",
+            checkmarks: 0,
+            timer: {
+              startedAt: Date.now(),
+              remainingTime: longBreakSeconds,
+            },
+          };
+        }
+        return {
+          ...s,
+          previousPeriod: s.currentPeriod,
+          currentPeriod: "short-break",
+          timer: {
+            startedAt: Date.now(),
+            remainingTime: shortBreakSeconds,
+          },
+        };
 
-    default:
-      throw new Error(
-        `Action not handled: ${JSON.stringify(action)}`
-      );
-  }
-};
+      case "finish-break":
+        console.assert(
+          s.currentPeriod === "short-break" ||
+            s.currentPeriod === "long-break"
+        );
+
+        return {
+          ...s,
+          previousPeriod: s.currentPeriod,
+          currentPeriod: "interaction",
+          timer: null,
+        };
+
+      case "abandon":
+        return {
+          previousPeriod: "interaction",
+          currentPeriod: "interaction",
+          checkmarks: 0,
+          timer: null,
+        };
+
+      case "tick":
+        if (!s.timer) {
+          console.error("cant tick");
+          return s;
+        }
+
+        if (s.timer.remainingTime === 0) {
+          return {
+            ...s,
+            timer: null,
+          };
+        }
+
+        return {
+          ...s,
+          timer: {
+            startedAt: s.timer.startedAt,
+            remainingTime: s.timer.remainingTime - 1,
+          },
+        };
+
+      default:
+        throw new Error(
+          `Action not handled: ${JSON.stringify(action)}`
+        );
+    }
+  };
+}
 
 /** @type {PomodoroState} */
 export const initialState = {
-  currentTimespan: "interaction",
+  previousPeriod: "interaction",
+  currentPeriod: "interaction",
   checkmarks: 0,
   timer: null,
 };
@@ -292,21 +402,16 @@ export const initialState = {
 const PomodoroTimer = () => {
   const showSettings = useBoolean(false);
   const settings = usePomodoroSettings();
-  const playAlarmSound = useAlarmSound(
-    "198841__bone666138__analog-alarm-clock.wav"
-  );
 
-  const shortBreakMinutes = Number(
-    settings.shortBreakTime.value
-  );
-  const longBreakMinutes = Number(
-    settings.longBreakTime.value
-  );
+  const settingsValues = settings.getValues();
 
   const [
-    { checkmarks, currentTimespan, timer },
+    { checkmarks, previousPeriod, currentPeriod, timer },
     dispatch,
-  ] = useReducer(pomodoroReducer, initialState);
+  ] = useReducer(
+    makePomodoroReducer(settingsValues),
+    initialState
+  );
 
   /**
    * @type {import("react").MutableRefObject<NodeJS.Timeout | undefined>}
@@ -321,6 +426,9 @@ const PomodoroTimer = () => {
     };
   }, []);
 
+  const playAlarmSound = useAlarmSound(
+    "198841__bone666138__analog-alarm-clock.wav"
+  );
   useEffect(() => {
     if (!timer) {
       return;
@@ -333,15 +441,11 @@ const PomodoroTimer = () => {
       interval.current = undefined;
 
       playAlarmSound();
-      if (currentTimespan === "work") {
-        dispatch({
-          type: "finish-work",
-        });
+      if (currentPeriod === "work") {
+        dispatch({ type: "finish-work" });
         notify("Work finished");
       } else {
-        dispatch({
-          type: "finish-break",
-        });
+        dispatch({ type: "finish-break" });
         notify("Break finished");
       }
     } else if (!interval.current) {
@@ -350,36 +454,41 @@ const PomodoroTimer = () => {
         1000
       );
     }
-  }, [timer, currentTimespan, playAlarmSound]);
+  }, [timer, currentPeriod, playAlarmSound]);
+
+  const {
+    longBreakSeconds,
+    shortBreakSeconds,
+    workSeconds,
+  } = settingsValues;
+
+  const nextBreakSeconds =
+    checkmarks === 4 ? longBreakSeconds : shortBreakSeconds;
 
   return (
     <section
       css={{ display: "flex", flexDirection: "column" }}
     >
-      <PomodoroTimerHeader
-        currentTimespan={currentTimespan}
-      />
+      <PomodoroTimerHeader currentPeriod={currentPeriod} />
       <div css={{ display: "flex", alignItems: "center" }}>
         <div role="group">
           <LabeledButton
-            disabled={currentTimespan !== "interaction"}
-            onClick={() => {
-              dispatch({
-                type: "start-work",
-              });
-            }}
-            minutes={25}
+            disabled={
+              currentPeriod !== "interaction" ||
+              previousPeriod === "work"
+            }
+            onClick={() => dispatch({ type: "start-work" })}
+            seconds={workSeconds}
           >
             Pomodoro
           </LabeledButton>
           <LabeledButton
-            disabled={currentTimespan !== "interaction"}
-            onClick={() => dispatch({ type: "take-break" })}
-            minutes={
-              checkmarks === 4
-                ? longBreakMinutes
-                : shortBreakMinutes
+            disabled={
+              currentPeriod !== "interaction" ||
+              previousPeriod !== "work"
             }
+            onClick={() => dispatch({ type: "take-break" })}
+            seconds={nextBreakSeconds}
           >
             Take a break
           </LabeledButton>
@@ -393,9 +502,20 @@ const PomodoroTimer = () => {
           }}
         >
           <Checkmarks checkmarks={checkmarks} />
-          <BigText>
-            {timer ? timer.remainingTime : "25:00"}
-          </BigText>
+
+          {timer ? (
+            <BigText>
+              {formatRemainingTime(timer.remainingTime)}
+            </BigText>
+          ) : (
+            <BigText css={{ color: gray }}>
+              {formatRemainingTime(
+                previousPeriod !== "work"
+                  ? workSeconds
+                  : nextBreakSeconds
+              )}
+            </BigText>
+          )}
         </div>
       </div>
       {showSettings.value && (

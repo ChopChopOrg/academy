@@ -1,7 +1,16 @@
 // TODO: Write proper tests here using Jest
 // This is just a script to run with Quokka during live coding ATM
 
-import { pomodoroReducer, initialState } from "../pomodoro";
+import {
+  makePomodoroReducer,
+  initialState,
+} from "../pomodoro";
+
+const pomodoroReducer = makePomodoroReducer({
+  longBreakSeconds: 15,
+  shortBreakSeconds: 5,
+  workSeconds: 25,
+});
 
 /** @type {import("../pomodoro").PomodoroAction[]} */
 const actions = [
@@ -28,4 +37,4 @@ const newState = actions.reduce(
   initialState
 ); // ?
 
-console.assert(newState.currentTimespan === "long-break");
+console.assert(newState.currentPeriod === "long-break");

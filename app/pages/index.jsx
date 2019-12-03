@@ -1,12 +1,11 @@
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
-import { useState, useCallback, useReducer } from "react";
+import { useReducer } from "react";
 import Head from "next/head";
 
 import {
   PageLayout,
   NewTodoForm,
-  TodoList,
   Todo,
   Button,
 } from "../src/components";

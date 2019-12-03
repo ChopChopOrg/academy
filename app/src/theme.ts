@@ -6,6 +6,7 @@ const colors = {
   black: "#000000",
   white: "#FFFFFF",
   shadow: "#e5e5e5",
+  gray: "#d2d2d2",
 };
 
 const boxShadow = {
