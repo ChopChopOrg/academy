@@ -9,9 +9,9 @@ You can see the app we're building during the live-coding at https://chop-chop-a
 
 ### Past Meetups
 
-0. Intro to React: live coding of a todo app \
+0. **Intro to React**: live coding of a todo app \
   [@drlech](https://github.com/drlech)
-1. Deeper into React: useReducer, useEffect, live coding of a pomodoro timer \
+1. **Deeper into React**: useReducer, useEffect, live coding of a pomodoro timer \
   [@hasparus](https://github.com/hasparus)
 
 ## FAQ
