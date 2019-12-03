@@ -4,8 +4,8 @@ You can see the app we're building during the live-coding at https://chop-chop-a
 
 ### Links
 
-- meetup.com — https://www.meetup.com/pl-PL/Chop-Chop-Academy-Web-Apps/
-  <!-- - chop-chop.org/academy — https://chop-chop.org/academy -->
+- [meetup.com/Chop-Chop-Academy-Web-Apps](https://www.meetup.com/Chop-Chop-Academy-Web-Apps)
+- [chop-chop.org/academy-web-apps](https://chop-chop.org/academy-web-apps)
 
 ### Past Meetups
 
