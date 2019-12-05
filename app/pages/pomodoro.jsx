@@ -10,93 +10,32 @@ import {
   useMemo,
 } from "react";
 
-import { Button } from "../src/components/Button";
-import { PageLayout } from "../src/components";
-import { A } from "../src/components/A";
+import {
+  Button,
+  A,
+  BigText,
+  useAlarmSound,
+  notify,
+  LabeledButton,
+} from "../src/lib";
+import {
+  PageLayout,
+  incrementCheckmarks,
+  formatRemainingTime,
+  PomodoroEmoji,
+} from "../src/app";
 import { theme } from "../src/theme";
-import { incrementCheckmarks } from "../src/pomodoro";
-import { BigText } from "../src/components/BigText";
-import { useAlarmSound } from "../src/useAlarmSound";
-import { notify } from "../src/notify";
 
 const WORK_MINUTES = 25;
-
-/**
- * @param {number} seconds
- */
-const formatRemainingTime = seconds => {
-  const minutes = Math.floor(seconds / 60);
-
-  const [minutesText, secondsText] = [
-    minutes,
-    seconds % 60,
-  ].map(x => String(x).padStart(2, "0"));
-
-  return `${minutesText}:${secondsText}`;
-};
 
 const {
   colors: { shadow, gray },
 } = theme;
 
 /**
- * @param {Omit<React.ComponentProps<"span">, 'role'>} props
- */
-const PomodoroEmoji = props => (
-  <span role="img" aria-label="pomodoro" {...props}>
-    🍅
-  </span>
-);
-
-/**
- * @param {{
- *   seconds: number,
- *   children: React.ReactNode,
- * } & import("../src/components/Button").ButtonProps} props
- */
-const LabeledButton = ({
-  seconds,
-  children,
-  disabled,
-  ...rest
-}) => {
-  return (
-    <label
-      css={[
-        { display: "block" },
-        !disabled && {
-          cursor: "pointer",
-          ":hover > span": {
-            textDecoration: "underline",
-          },
-        },
-      ]}
-    >
-      <span
-        css={{ display: "inline-block", width: "5.5em" }}
-      >
-        {children}
-      </span>
-      <Button
-        disabled={disabled}
-        css={{
-          marginLeft: "1em",
-          width: "6em",
-        }}
-        {...rest}
-      >
-        {seconds > 60
-          ? `${Math.round(seconds / 60)} min`
-          : `${seconds} sec`}
-      </Button>
-    </label>
-  );
-};
-
-/**
  * @type {React.FC<React.ComponentProps<"section">>}
  */
-const LearnMoreSection = props => ((
+const LearnMoreSection = props => (
   <section
     css={{
       borderTop: `1px solid ${shadow}`,
@@ -108,7 +47,7 @@ const LearnMoreSection = props => ((
       Learn more about Pomodoro Technique on Wikipedia
     </A>
   </section>
-));
+);
 
 const usePomodoroSettings = () => {
   const persisted = useMemo(() => {
@@ -429,6 +368,7 @@ const PomodoroTimer = () => {
   const playAlarmSound = useAlarmSound(
     "198841__bone666138__analog-alarm-clock.wav"
   );
+
   useEffect(() => {
     if (!timer) {
       return;

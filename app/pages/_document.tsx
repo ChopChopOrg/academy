@@ -1,3 +1,6 @@
+/** @jsx jsx */
+import { jsx } from "@emotion/core";
+
 import Document, {
   Html,
   Head,

@@ -3,8 +3,8 @@ import { jsx } from "@emotion/core";
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 
-import { Button } from "./Button";
-import { theme } from "../theme";
+import { Button } from "../../lib/components/Button";
+import { theme } from "../../theme";
 
 const {
   colors: { shadow, blue },
@@ -61,7 +61,7 @@ export const NewTodoForm = ({ onAdd }) => {
     setText("");
   };
 
-  return ((
+  return (
     <Form onSubmit={handleSubmit}>
       <Input
         value={text}
@@ -81,5 +81,5 @@ export const NewTodoForm = ({ onAdd }) => {
         Add Todo
       </Button>
     </Form>
-  ));
+  );
 };

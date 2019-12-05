@@ -8,7 +8,7 @@ import React, { ComponentProps } from "react";
 import styled from "@emotion/styled";
 import Link from "next/link";
 
-import { theme } from "../theme";
+import { theme } from "../../theme";
 
 const globalStyles = css`
   html,
@@ -156,9 +156,9 @@ export function PageLayout({ children }: PageLayoutProps) {
   );
 }
 
-const PageLayoutMargin: React.FC<
-  ComponentProps<"div">
-> = props => (
+const PageLayoutMargin: React.FC<ComponentProps<
+  "div"
+>> = props => (
   <div
     css={{
       margin: "auto",

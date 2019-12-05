@@ -4,7 +4,7 @@
 import {
   makePomodoroReducer,
   initialState,
-} from "../../pages/pomodoro";
+} from "../../../pages/pomodoro";
 
 const pomodoroReducer = makePomodoroReducer({
   longBreakSeconds: 15,
@@ -12,7 +12,7 @@ const pomodoroReducer = makePomodoroReducer({
   workSeconds: 25,
 });
 
-/** @type {import("../../pages/pomodoro").PomodoroAction[]} */
+/** @type {import("../../../pages/pomodoro").PomodoroAction[]} */
 const actions = [
   { type: "start-work" },
   { type: "finish-work" },

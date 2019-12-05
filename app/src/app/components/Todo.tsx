@@ -2,8 +2,8 @@
 import { jsx, css } from "@emotion/core";
 import { useState } from "react";
 
-import { theme } from "../theme";
-import { Button } from "./Button";
+import { theme } from "../../theme";
+import { Button } from "../../lib/components/Button";
 
 const {
   colors: { shadow, black, blue },
