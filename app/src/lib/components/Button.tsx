@@ -2,7 +2,7 @@
 import { jsx, css, Interpolation } from "@emotion/core";
 import React, { ComponentProps } from "react";
 
-import { theme } from "../theme";
+import { theme } from "../../theme";
 
 const {
   colors: { shadow, yellow, black, blue, gray },

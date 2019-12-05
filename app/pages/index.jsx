@@ -3,12 +3,8 @@ import { jsx } from "@emotion/core";
 import { useReducer } from "react";
 import Head from "next/head";
 
-import {
-  PageLayout,
-  NewTodoForm,
-  Todo,
-  Button,
-} from "../src/components";
+import { Button } from "../src/lib";
+import { PageLayout, NewTodoForm, Todo } from "../src/app";
 
 /**
  * @template T
