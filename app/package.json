@@ -6,7 +6,7 @@
     "start": "next",
     "dev": "next",
     "build": "next build && next export -o build",
-    "lint": "eslint src/**/*",
+    "lint": "eslint src/**/*.{js,jsx,ts,tsx}",
     "typecheck": "tsc --noEmit",
     "prettier-check": "prettier --check src/**/*"
   },

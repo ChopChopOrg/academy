@@ -4,11 +4,12 @@
 import "focus-visible/dist/focus-visible.min";
 
 import { jsx, css, Global } from "@emotion/core";
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, forwardRef } from "react";
 import styled from "@emotion/styled";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
+import { HamburgerMenu } from "../../lib/components/HamburgeMenu";
 import { theme } from "../../theme";
 
 const globalStyles = css`
@@ -42,36 +43,41 @@ const PageHeader = styled.header`
 
   border-bottom: 1px solid ${theme.colors.shadow};
 
-  ${theme.mediaQueries.small} {
-    flex-direction: column;
+  ${theme.mediaQueries.medium} {
+    display: block;
   }
 `;
 
-const NavLink = (props: ComponentProps<"a">) => {
-  const { pathname } = useRouter();
-  console.log(">", pathname, props.href);
-  return (
-    <a
-      css={[
-        {
-          padding: "1em",
-          textDecoration: "none",
-          display: "block",
+const NavLink = forwardRef(
+  (
+    props: ComponentProps<"a">,
+    ref: React.Ref<HTMLAnchorElement>
+  ) => {
+    const { pathname } = useRouter();
+    return (
+      <a
+        ref={ref}
+        css={[
+          {
+            padding: "1em",
+            textDecoration: "none",
+            display: "block",
 
-          color: theme.colors.black,
-          outlineColor: theme.colors.blue,
-          cursor: "pointer",
+            color: theme.colors.black,
+            outlineColor: theme.colors.blue,
+            cursor: "pointer",
 
-          borderBottom: "1px solid transparent",
-        },
-        pathname === props.href && {
-          borderColor: theme.colors.black,
-        },
-      ]}
-      {...props}
-    />
-  );
-};
+            borderBottom: "1px solid transparent",
+          },
+          pathname === props.href && {
+            borderColor: theme.colors.black,
+          },
+        ]}
+        {...props}
+      />
+    );
+  }
+);
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -84,7 +90,9 @@ export function PageLayout({ children }: PageLayoutProps) {
         <PageHeader>
           <Link href="/">
             <NavLink
-              css={{ ":hover": { textDecoration: "none" } }}
+              css={{
+                display: "inline-flex",
+              }}
             >
               <em css={{ fontStyle: "normal" }}>
                 <span role="img" aria-label="">
@@ -105,21 +113,25 @@ export function PageLayout({ children }: PageLayoutProps) {
                   borderColor: theme.colors.blue,
                 },
               },
-              [theme.mediaQueries.small]: {
-                flexDirection: "column",
-                a: {
-                  width: "100%",
-                  marginLeft: 0,
-                },
+              [theme.mediaQueries.medium]: {
+                display: "none",
               },
             }}
           >
             <Link href="/">
-              <NavLink href="/">✅ To-Dos</NavLink>
+              <NavLink href="/">
+                <span role="img" aria-label="">
+                  ✅
+                </span>{" "}
+                To-Dos
+              </NavLink>
             </Link>
             <Link href="/pomodoro">
               <NavLink href="/pomodoro">
-                🍅 Pomodoro
+                <span role="img" aria-label="">
+                  🍅
+                </span>{" "}
+                Pomodoro
               </NavLink>
             </Link>
             <NavLink href="https://github.com/ChopChopOrg/academy">
@@ -129,6 +141,37 @@ export function PageLayout({ children }: PageLayoutProps) {
               Meetup
             </NavLink>
           </nav>
+          <HamburgerMenu
+            css={{
+              display: "none",
+              [theme.mediaQueries.medium]: {
+                display: "unset",
+              },
+            }}
+          >
+            <Link href="/">
+              <NavLink href="/">
+                <span role="img" aria-label="">
+                  ✅
+                </span>{" "}
+                To-Dos
+              </NavLink>
+            </Link>
+            <Link href="/pomodoro">
+              <NavLink href="/pomodoro">
+                <span role="img" aria-label="">
+                  🍅
+                </span>{" "}
+                Pomodoro
+              </NavLink>
+            </Link>
+            <NavLink href="https://github.com/ChopChopOrg/academy">
+              GitHub
+            </NavLink>
+            <NavLink href="https://www.meetup.com/Chop-Chop-Academy-Web-Apps/">
+              Meetup
+            </NavLink>
+          </HamburgerMenu>
         </PageHeader>
         <main css={{ minHeight: "90vh" }}>{children}</main>
         <footer
@@ -149,7 +192,7 @@ export function PageLayout({ children }: PageLayoutProps) {
                   textDecoration: "underline",
                 },
               },
-              [theme.mediaQueries.small]: {
+              [theme.mediaQueries.medium]: {
                 flexDirection: "column",
                 li: {
                   marginBottom: "1em",
@@ -192,8 +235,8 @@ const PageLayoutMargin: React.FC<ComponentProps<
       padding: "1em",
       width: "80ch",
       maxWidth: "100%",
-      [theme.mediaQueries.small]: {
-        padding: 4,
+      [theme.mediaQueries.medium]: {
+        padding: 16,
       },
     }}
     {...props}
