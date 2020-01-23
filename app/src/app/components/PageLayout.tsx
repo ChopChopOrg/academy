@@ -7,6 +7,7 @@ import { jsx, css, Global } from "@emotion/core";
 import React, { ComponentProps } from "react";
 import styled from "@emotion/styled";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import { theme } from "../../theme";
 
@@ -46,19 +47,31 @@ const PageHeader = styled.header`
   }
 `;
 
-const NavLink = styled.a`
-  padding: 1em;
-  text-decoration: none;
-  display: block;
+const NavLink = (props: ComponentProps<"a">) => {
+  const { pathname } = useRouter();
+  console.log(">", pathname, props.href);
+  return (
+    <a
+      css={[
+        {
+          padding: "1em",
+          textDecoration: "none",
+          display: "block",
 
-  color: ${theme.colors.black};
-  outline-color: ${theme.colors.blue};
-  cursor: pointer;
+          color: theme.colors.black,
+          outlineColor: theme.colors.blue,
+          cursor: "pointer",
 
-  :hover {
-    text-decoration: underline;
-  }
-`;
+          borderBottom: "1px solid transparent",
+        },
+        pathname === props.href && {
+          borderColor: theme.colors.black,
+        },
+      ]}
+      {...props}
+    />
+  );
+};
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -70,15 +83,14 @@ export function PageLayout({ children }: PageLayoutProps) {
       <PageContainer>
         <PageHeader>
           <Link href="/">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <NavLink
               css={{ ":hover": { textDecoration: "none" } }}
             >
               <em css={{ fontStyle: "normal" }}>
                 <span role="img" aria-label="">
-                  ✅
+                  🎓
                 </span>{" "}
-                Todo App
+                Chop-Chop Academy
               </em>
             </NavLink>
           </Link>
@@ -88,6 +100,11 @@ export function PageLayout({ children }: PageLayoutProps) {
               display: "flex",
               flexDirection: "row",
               flexWrap: "wrap",
+              a: {
+                ":hover": {
+                  borderColor: theme.colors.blue,
+                },
+              },
               [theme.mediaQueries.small]: {
                 flexDirection: "column",
                 a: {
@@ -97,9 +114,14 @@ export function PageLayout({ children }: PageLayoutProps) {
               },
             }}
           >
-            <NavLink href="https://chop-chop.org/academy-web-apps">
-              Chop-Chop Academy
-            </NavLink>
+            <Link href="/">
+              <NavLink href="/">✅ To-Dos</NavLink>
+            </Link>
+            <Link href="/pomodoro">
+              <NavLink href="/pomodoro">
+                🍅 Pomodoro
+              </NavLink>
+            </Link>
             <NavLink href="https://github.com/ChopChopOrg/academy">
               GitHub
             </NavLink>
@@ -122,6 +144,11 @@ export function PageLayout({ children }: PageLayoutProps) {
               flexDirection: "row",
               margin: 0,
               padding: 0,
+              a: {
+                ":hover": {
+                  textDecoration: "underline",
+                },
+              },
               [theme.mediaQueries.small]: {
                 flexDirection: "column",
                 li: {
@@ -136,7 +163,7 @@ export function PageLayout({ children }: PageLayoutProps) {
           >
             <li>
               <NavLink href="https://chop-chop.org/">
-                Chop-Chop Academy
+                Chop-Chop
               </NavLink>
             </li>
             <li>

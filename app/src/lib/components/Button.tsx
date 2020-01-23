@@ -24,7 +24,7 @@ const _3dStyles = css`
   border-radius: ${borderRadius.small};
   padding: 0.7em 1em 1em 1em;
 
-  :enabled {
+  :not(:disabled) {
     cursor: pointer;
 
     :focus {
