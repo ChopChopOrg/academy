@@ -61,6 +61,7 @@ const resetStyles = css`
   -webkit-appearance: none;
 
   outline-color: ${blue};
+  cursor: pointer;
 `;
 
 // #endregion styles

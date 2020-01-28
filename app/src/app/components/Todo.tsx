@@ -29,8 +29,8 @@ export const Todo = ({
 
   return (
     <div
-      onPointerOut={onClick && (() => setHovered(false))}
-      onPointerEnter={onClick && (() => setHovered(true))}
+      onPointerLeave={onClick && (() => setHovered(false))}
+      onPointerOver={onClick && (() => setHovered(true))}
       css={[
         css`
           position: relative;
