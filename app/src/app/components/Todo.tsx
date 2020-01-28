@@ -74,11 +74,13 @@ export const Todo = ({
           `}
         />
       )}
-      <div css={{ zIndex: 1 }}>
-        <span css={{ marginRight: "0.5em" }}>
+      <div css={{ zIndex: 1, pointerEvents: "none" }}>
+        <span css={{ marginRight: "0.5em" }} role="img">
           {focused || hovered || isDone ? "✅" : "⬜"}
         </span>
-        {children}
+        <span css={{ pointerEvents: "auto" }}>
+          {children}
+        </span>
       </div>
       {actions && (
         <div role="group" css={{ zIndex: 1 }}>
