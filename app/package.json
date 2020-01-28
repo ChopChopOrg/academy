@@ -54,7 +54,7 @@
     "babel-plugin-emotion": "^10.0.23",
     "core-js": "^3.4.7",
     "eslint": "^6.7.2",
-    "eslint-config-chop-chop": "^1.2.5",
+    "eslint-config-chop-chop": "^1.2.8",
     "globby": "^10.0.1",
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
