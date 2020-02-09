@@ -141,6 +141,8 @@ export function PageLayout({ children }: PageLayoutProps) {
               Meetup
             </NavLink>
           </nav>
+          {/* Warning: Failed prop type: Link: unknown props found: className, style, tabIndex */}
+          {/* TODO: Next Link is super painful, I already have some code to fix it though */}
           <HamburgerMenu
             css={{
               display: "none",

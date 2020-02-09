@@ -3,7 +3,7 @@
   // Just comment them while developing
 
   // similar to GitHub theme
-  "workbench.colorTheme": "GitHub Plus",
+  // "workbench.colorTheme": "GitHub Plus",
 
   // make it big
   // "editor.fontSize": 24, // <
