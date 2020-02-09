@@ -476,7 +476,7 @@ const PomodoroTimer = () => {
         <Button
           small
           css={{ marginLeft: "1em" }}
-          onClick={() => {}}
+          onClick={() => dispatch({ type: "abandon" })}
         >
           Abandon and reset timers
         </Button>
