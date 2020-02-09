@@ -32,10 +32,10 @@ const {
   colors: { shadow, gray },
 } = theme;
 
-/**
- * @type {React.FC<React.ComponentProps<"section">>}
- */
-const LearnMoreSection = props => (
+type LearnMoreSectionProps = React.ComponentProps<
+  "section"
+>;
+const LearnMoreSection: React.FC<LearnMoreSectionProps> = props => (
   <section
     css={{
       borderTop: `1px solid ${shadow}`,
@@ -106,18 +106,20 @@ const usePomodoroSettings = () => {
   };
 };
 
-/**
- * @typedef {ReturnType<typeof usePomodoroSettings>} Settings
- * @typedef {ReturnType<Settings['getValues']>} SettingsValues
- * @param {Settings & React.ComponentProps<"div">} props
- */
+type Settings = ReturnType<typeof usePomodoroSettings>;
+type SettingsValues = ReturnType<Settings["getValues"]>;
+
+interface PomodoroSettingsProps
+  extends Settings,
+    React.ComponentProps<"div"> {}
+
 const PomodoroSettings = ({
   shortBreakTime,
   longBreakTime,
   secondsInsteadOfMinutes,
   getValues: _,
   ...rest
-}) => {
+}: PomodoroSettingsProps) => {
   return (
     <div
       role="group"
@@ -172,10 +174,13 @@ const PomodoroTimerFooter = styled.footer({
   margin: "2rem auto 0 0",
 });
 
-/**
- * @param {{ currentPeriod: PomodoroState['currentPeriod'] }} props
- */
-const PomodoroTimerHeader = ({ currentPeriod }) => {
+interface PomodoroTimerHeaderProps {
+  currentPeriod: PomodoroState["currentPeriod"];
+}
+
+const PomodoroTimerHeader = ({
+  currentPeriod,
+}: PomodoroTimerHeaderProps) => {
   return (
     <header>
       <h2 css={{ textTransform: "capitalize" }}>
@@ -187,10 +192,10 @@ const PomodoroTimerHeader = ({ currentPeriod }) => {
   );
 };
 
-/**
- * @param {{ checkmarks: PomodoroState['checkmarks'] }} props
- */
-const Checkmarks = ({ checkmarks }) => {
+interface CheckmarksProps {
+  checkmarks: PomodoroState["checkmarks"];
+}
+const Checkmarks = ({ checkmarks }: CheckmarksProps) => {
   return (
     <div title="pomodoros completed">
       {Array.from({ length: 4 }).map((_, i) =>
@@ -200,38 +205,42 @@ const Checkmarks = ({ checkmarks }) => {
   );
 };
 
+type PomodoroTimePeriod =
+  | "work"
+  | "short-break"
+  | "long-break"
+  | "interaction";
+
+interface PomodoroState {
+  previousPeriod: PomodoroTimePeriod;
+  currentPeriod: PomodoroTimePeriod;
+  checkmarks: 0 | 1 | 2 | 3 | 4;
+  timer: {
+    startedAt: number;
+    remainingTime: number;
+  } | null;
+}
+
+type PomodoroAction =
+  | { type: "start-work" }
+  | { type: "finish-work" }
+  | { type: "take-break" }
+  | { type: "finish-break" }
+  | { type: "abandon" }
+  | { type: "tick" };
+
 /**
  * @see https://en.wikipedia.org/wiki/Pomodoro_Technique
- *
- * @typedef {'work' | 'short-break' | 'long-break' | 'interaction'} PomodoroTimePeriod
- * @typedef {{
- *   previousPeriod: PomodoroTimePeriod,
- *   currentPeriod: PomodoroTimePeriod,
- *   checkmarks: 0 | 1 | 2 | 3 | 4,
- *   timer: { startedAt: number, remainingTime: number } | null,
- * }} PomodoroState
- * @typedef {{
- *   type: 'start-work',
- * } | {
- *   type: 'finish-work',
- * } | {
- *   type: 'take-break',
- * } | {
- *   type: 'finish-break',
- * } | {
- *   type: 'abandon',
- * } | {
- *   type: 'tick'
- * }} PomodoroAction
- * @param {SettingsValues} settings
- * @returns {React.Reducer<PomodoroState, PomodoroAction>}
  */
 
 export function makePomodoroReducer({
   shortBreakSeconds,
   longBreakSeconds,
   workSeconds,
-}) {
+}: SettingsValues): React.Reducer<
+  PomodoroState,
+  PomodoroAction
+> {
   return function pomodoroReducer(s, action) {
     switch (action.type) {
       case "start-work":
@@ -330,8 +339,7 @@ export function makePomodoroReducer({
   };
 }
 
-/** @type {PomodoroState} */
-export const initialState = {
+export const initialState: PomodoroState = {
   previousPeriod: "interaction",
   currentPeriod: "interaction",
   checkmarks: 0,
@@ -352,10 +360,7 @@ const PomodoroTimer = () => {
     initialState
   );
 
-  /**
-   * @type {import("react").MutableRefObject<NodeJS.Timeout | undefined>}
-   */
-  const interval = useRef();
+  const interval = useRef<NodeJS.Timeout | undefined>();
   useEffect(() => {
     // clean up interval on unmount
     return () => {
