@@ -9,6 +9,7 @@ module.exports = {
       "warn",
       {
         varsIgnorePattern: "^React$|_",
+        argsIgnorePattern: "^_",
       },
     ],
     // This rule is good, but requires editing
