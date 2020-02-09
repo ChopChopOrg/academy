@@ -468,7 +468,11 @@ const PomodoroTimer = () => {
         <Button small onClick={showSettings.toggle}>
           {showSettings.value ? "Hide" : "Show"} Settings
         </Button>
-        <Button small css={{ marginLeft: "1em" }}>
+        <Button
+          small
+          css={{ marginLeft: "1em" }}
+          onClick={() => {}}
+        >
           Abandon and reset timers
         </Button>
       </PomodoroTimerFooter>
