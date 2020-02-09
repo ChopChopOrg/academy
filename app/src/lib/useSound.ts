@@ -1,13 +1,7 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo } from "react";
 
-/**
- * @param {string} soundUrl
- */
-export function useAlarmSound(soundUrl) {
-  /**
-   * @type {React.MutableRefObject<AudioContext | undefined>}
-   */
-  const audioCtx = useRef();
+export function useSound(soundUrl: string) {
+  const audioCtx = useRef<AudioContext | undefined>();
 
   useEffect(() => {
     audioCtx.current = new AudioContext();
@@ -19,10 +13,7 @@ export function useAlarmSound(soundUrl) {
     };
   }, []);
 
-  /**
-   * @type {React.MutableRefObject<Promise<AudioBuffer> | undefined>}
-   */
-  const buffer = useRef();
+  const buffer = useRef<Promise<AudioBuffer> | undefined>();
 
   useEffect(() => {
     const ctx = audioCtx.current;
@@ -44,7 +35,7 @@ export function useAlarmSound(soundUrl) {
 
   return useMemo(
     () =>
-      async function playAlarmSound() {
+      async function play(): Promise<void> {
         return (
           buffer.current &&
           buffer.current.then(buf => {
