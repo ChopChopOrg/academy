@@ -14,7 +14,7 @@ import {
   Button,
   A,
   BigText,
-  useAlarmSound,
+  useSound,
   notify,
   LabeledButton,
 } from "../src/lib";
@@ -370,7 +370,7 @@ const PomodoroTimer = () => {
     };
   }, []);
 
-  const playAlarmSound = useAlarmSound(
+  const playAlarmSound = useSound(
     "198841__bone666138__analog-alarm-clock.wav"
   );
 
