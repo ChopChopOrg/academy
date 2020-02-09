@@ -18,14 +18,17 @@ const actions = [
   { type: "finish-work" },
   { type: "take-break" },
   { type: "finish-break" },
+  //
   { type: "start-work" },
   { type: "finish-work" },
   { type: "take-break" },
   { type: "finish-break" },
+  //
   { type: "start-work" },
   { type: "finish-work" },
   { type: "take-break" },
   { type: "finish-break" },
+  //
   { type: "start-work" },
   { type: "finish-work" },
   { type: "take-break" },

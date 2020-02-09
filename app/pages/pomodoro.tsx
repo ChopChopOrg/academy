@@ -221,7 +221,7 @@ interface PomodoroState {
   } | null;
 }
 
-type PomodoroAction =
+export type PomodoroAction =
   | { type: "start-work" }
   | { type: "finish-work" }
   | { type: "take-break" }
