@@ -1,4 +1,4 @@
-const breakpoints = ["420px"];
+const breakpoints = ["40em", "56em", "64em"];
 
 const colors = {
   yellow: "#FFCC00",
@@ -40,5 +40,6 @@ export const theme = {
   breakpoints,
   mediaQueries: {
     small: `@media screen and (max-width: ${breakpoints[0]})`,
+    medium: `@media screen and (max-width: ${breakpoints[1]})`,
   },
 };

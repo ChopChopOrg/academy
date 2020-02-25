@@ -15,6 +15,10 @@ You can see the app we're building during the live-coding at https://chop-chop-a
   Speaker: [@hasparus](https://github.com/hasparus)
     - Started live coding from [deeper-into-react-prep](https://github.com/ChopChopOrg/academy/tree/deeper-into-react-prep) branch
     - Ended on [5763cee](https://github.com/ChopChopOrg/academy/commit/5763ceee363da1e2455dd3197f55830b15cf88f9)
+2. **Taking control of your codebase**: How I stopped worrying and started to love TypeScript and Jest \
+   Speakers:
+     - [@0ctothorp](https://github.com/0ctothorp): **Getting to know TypeScript**
+     - [@drlech](https://github.com/drlech): **Unit testing with Jest**
 
 ## FAQ
 

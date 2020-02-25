@@ -4,10 +4,12 @@
 import "focus-visible/dist/focus-visible.min";
 
 import { jsx, css, Global } from "@emotion/core";
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, forwardRef } from "react";
 import styled from "@emotion/styled";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
+import { HamburgerMenu } from "../../lib/components/HamburgeMenu";
 import { theme } from "../../theme";
 
 const globalStyles = css`
@@ -41,24 +43,41 @@ const PageHeader = styled.header`
 
   border-bottom: 1px solid ${theme.colors.shadow};
 
-  ${theme.mediaQueries.small} {
-    flex-direction: column;
+  ${theme.mediaQueries.medium} {
+    display: block;
   }
 `;
 
-const NavLink = styled.a`
-  padding: 1em;
-  text-decoration: none;
-  display: block;
+const NavLink = forwardRef(
+  (
+    props: ComponentProps<"a">,
+    ref: React.Ref<HTMLAnchorElement>
+  ) => {
+    const { pathname } = useRouter();
+    return (
+      <a
+        ref={ref}
+        css={[
+          {
+            padding: "1em",
+            textDecoration: "none",
+            display: "block",
 
-  color: ${theme.colors.black};
-  outline-color: ${theme.colors.blue};
-  cursor: pointer;
+            color: theme.colors.black,
+            outlineColor: theme.colors.blue,
+            cursor: "pointer",
 
-  :hover {
-    text-decoration: underline;
+            borderBottom: "1px solid transparent",
+          },
+          pathname === props.href && {
+            borderColor: theme.colors.black,
+          },
+        ]}
+        {...props}
+      />
+    );
   }
-`;
+);
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -70,15 +89,16 @@ export function PageLayout({ children }: PageLayoutProps) {
       <PageContainer>
         <PageHeader>
           <Link href="/">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <NavLink
-              css={{ ":hover": { textDecoration: "none" } }}
+              css={{
+                display: "inline-flex",
+              }}
             >
               <em css={{ fontStyle: "normal" }}>
                 <span role="img" aria-label="">
-                  ✅
+                  🎓
                 </span>{" "}
-                Todo App
+                Chop-Chop Academy
               </em>
             </NavLink>
           </Link>
@@ -88,18 +108,32 @@ export function PageLayout({ children }: PageLayoutProps) {
               display: "flex",
               flexDirection: "row",
               flexWrap: "wrap",
-              [theme.mediaQueries.small]: {
-                flexDirection: "column",
-                a: {
-                  width: "100%",
-                  marginLeft: 0,
+              a: {
+                ":hover": {
+                  borderColor: theme.colors.blue,
                 },
+              },
+              [theme.mediaQueries.medium]: {
+                display: "none",
               },
             }}
           >
-            <NavLink href="https://chop-chop.org/academy-web-apps">
-              Chop-Chop Academy
-            </NavLink>
+            <Link href="/">
+              <NavLink href="/">
+                <span role="img" aria-label="">
+                  ✅
+                </span>{" "}
+                To-Dos
+              </NavLink>
+            </Link>
+            <Link href="/pomodoro">
+              <NavLink href="/pomodoro">
+                <span role="img" aria-label="">
+                  🍅
+                </span>{" "}
+                Pomodoro
+              </NavLink>
+            </Link>
             <NavLink href="https://github.com/ChopChopOrg/academy">
               GitHub
             </NavLink>
@@ -107,6 +141,39 @@ export function PageLayout({ children }: PageLayoutProps) {
               Meetup
             </NavLink>
           </nav>
+          {/* Warning: Failed prop type: Link: unknown props found: className, style, tabIndex */}
+          {/* TODO: Next Link is super painful, I already have some code to fix it though */}
+          <HamburgerMenu
+            css={{
+              display: "none",
+              [theme.mediaQueries.medium]: {
+                display: "unset",
+              },
+            }}
+          >
+            <Link href="/">
+              <NavLink href="/">
+                <span role="img" aria-label="">
+                  ✅
+                </span>{" "}
+                To-Dos
+              </NavLink>
+            </Link>
+            <Link href="/pomodoro">
+              <NavLink href="/pomodoro">
+                <span role="img" aria-label="">
+                  🍅
+                </span>{" "}
+                Pomodoro
+              </NavLink>
+            </Link>
+            <NavLink href="https://github.com/ChopChopOrg/academy">
+              GitHub
+            </NavLink>
+            <NavLink href="https://www.meetup.com/Chop-Chop-Academy-Web-Apps/">
+              Meetup
+            </NavLink>
+          </HamburgerMenu>
         </PageHeader>
         <main css={{ minHeight: "90vh" }}>{children}</main>
         <footer
@@ -122,7 +189,12 @@ export function PageLayout({ children }: PageLayoutProps) {
               flexDirection: "row",
               margin: 0,
               padding: 0,
-              [theme.mediaQueries.small]: {
+              a: {
+                ":hover": {
+                  textDecoration: "underline",
+                },
+              },
+              [theme.mediaQueries.medium]: {
                 flexDirection: "column",
                 li: {
                   marginBottom: "1em",
@@ -136,7 +208,7 @@ export function PageLayout({ children }: PageLayoutProps) {
           >
             <li>
               <NavLink href="https://chop-chop.org/">
-                Chop-Chop Academy
+                Chop-Chop
               </NavLink>
             </li>
             <li>
@@ -165,8 +237,8 @@ const PageLayoutMargin: React.FC<ComponentProps<
       padding: "1em",
       width: "80ch",
       maxWidth: "100%",
-      [theme.mediaQueries.small]: {
-        padding: 4,
+      [theme.mediaQueries.medium]: {
+        padding: 16,
       },
     }}
     {...props}

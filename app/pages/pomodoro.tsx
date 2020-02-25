@@ -14,7 +14,7 @@ import {
   Button,
   A,
   BigText,
-  useAlarmSound,
+  useSound,
   notify,
   LabeledButton,
 } from "../src/lib";
@@ -26,16 +26,14 @@ import {
 } from "../src/app";
 import { theme } from "../src/theme";
 
-const WORK_MINUTES = 25;
-
 const {
   colors: { shadow, gray },
 } = theme;
 
-/**
- * @type {React.FC<React.ComponentProps<"section">>}
- */
-const LearnMoreSection = props => (
+type LearnMoreSectionProps = React.ComponentProps<
+  "section"
+>;
+const LearnMoreSection: React.FC<LearnMoreSectionProps> = props => (
   <section
     css={{
       borderTop: `1px solid ${shadow}`,
@@ -51,21 +49,28 @@ const LearnMoreSection = props => (
 
 const usePomodoroSettings = () => {
   const persisted = useMemo(() => {
-    return JSON.parse(
+    let json: Record<string, unknown> = JSON.parse(
       (typeof localStorage !== "undefined" &&
         localStorage.getItem("pomodoro-settings")) ||
         "{}"
     );
+    json = typeof json === "object" ? json : {};
+
+    return {
+      shortBreakTime: Number(json.shortBreakTime) || 5,
+      longBreakTime: Number(json.longBreakTime) || 15,
+      workTime: Number(json.workTime) || 25,
+      secondsInsteadOfMinutes: Boolean(
+        json.secondsInsteadOfMinutes
+      ),
+    };
   }, []);
 
-  const shortBreakTime = useInput(
-    persisted.shortBreakTime || 5
-  );
-  const longBreakTime = useInput(
-    persisted.longBreakTime || 15
-  );
+  const shortBreakTime = useInput(persisted.shortBreakTime);
+  const longBreakTime = useInput(persisted.longBreakTime);
+  const workTime = useInput(persisted.workTime);
   const secondsInsteadOfMinutes = useBoolean(
-    persisted.secondsInsteadOfMinutes || false
+    persisted.secondsInsteadOfMinutes
   );
 
   useEffect(() => {
@@ -76,6 +81,7 @@ const usePomodoroSettings = () => {
           JSON.stringify({
             shortBreakTime: shortBreakTime.value,
             longBreakTime: longBreakTime.value,
+            workTime: workTime.value,
             secondsInsteadOfMinutes:
               secondsInsteadOfMinutes.value,
           })
@@ -85,6 +91,7 @@ const usePomodoroSettings = () => {
   }, [
     shortBreakTime.value,
     longBreakTime.value,
+    workTime.value,
     secondsInsteadOfMinutes.value,
   ]);
 
@@ -93,6 +100,7 @@ const usePomodoroSettings = () => {
   return {
     shortBreakTime,
     longBreakTime,
+    workTime,
     secondsInsteadOfMinutes,
     getValues() {
       return {
@@ -100,24 +108,27 @@ const usePomodoroSettings = () => {
           Number(shortBreakTime.value) * modifier,
         longBreakSeconds:
           Number(longBreakTime.value) * modifier,
-        workSeconds: WORK_MINUTES * modifier,
+        workSeconds: Number(workTime.value) * modifier,
       };
     },
   };
 };
 
-/**
- * @typedef {ReturnType<typeof usePomodoroSettings>} Settings
- * @typedef {ReturnType<Settings['getValues']>} SettingsValues
- * @param {Settings & React.ComponentProps<"div">} props
- */
+type Settings = ReturnType<typeof usePomodoroSettings>;
+type SettingsValues = ReturnType<Settings["getValues"]>;
+
+interface PomodoroSettingsProps
+  extends Settings,
+    React.ComponentProps<"div"> {}
+
 const PomodoroSettings = ({
   shortBreakTime,
   longBreakTime,
   secondsInsteadOfMinutes,
+  workTime,
   getValues: _,
   ...rest
-}) => {
+}: PomodoroSettingsProps) => {
   return (
     <div
       role="group"
@@ -152,6 +163,16 @@ const PomodoroSettings = ({
         />
       </label>
       <label>
+        Work:
+        <input
+          type="range"
+          min={20}
+          max={90}
+          step={5}
+          {...workTime.eventBind}
+        />
+      </label>
+      <label>
         Use seconds instead of minutes (useful for
         debugging):
         <input
@@ -172,10 +193,13 @@ const PomodoroTimerFooter = styled.footer({
   margin: "2rem auto 0 0",
 });
 
-/**
- * @param {{ currentPeriod: PomodoroState['currentPeriod'] }} props
- */
-const PomodoroTimerHeader = ({ currentPeriod }) => {
+interface PomodoroTimerHeaderProps {
+  currentPeriod: PomodoroState["currentPeriod"];
+}
+
+const PomodoroTimerHeader = ({
+  currentPeriod,
+}: PomodoroTimerHeaderProps) => {
   return (
     <header>
       <h2 css={{ textTransform: "capitalize" }}>
@@ -187,10 +211,10 @@ const PomodoroTimerHeader = ({ currentPeriod }) => {
   );
 };
 
-/**
- * @param {{ checkmarks: PomodoroState['checkmarks'] }} props
- */
-const Checkmarks = ({ checkmarks }) => {
+interface CheckmarksProps {
+  checkmarks: PomodoroState["checkmarks"];
+}
+const Checkmarks = ({ checkmarks }: CheckmarksProps) => {
   return (
     <div title="pomodoros completed">
       {Array.from({ length: 4 }).map((_, i) =>
@@ -200,38 +224,42 @@ const Checkmarks = ({ checkmarks }) => {
   );
 };
 
+type PomodoroTimePeriod =
+  | "work"
+  | "short-break"
+  | "long-break"
+  | "interaction";
+
+interface PomodoroState {
+  previousPeriod: PomodoroTimePeriod;
+  currentPeriod: PomodoroTimePeriod;
+  checkmarks: 0 | 1 | 2 | 3 | 4;
+  timer: {
+    startedAt: number;
+    remainingTime: number;
+  } | null;
+}
+
+export type PomodoroAction =
+  | { type: "start-work" }
+  | { type: "finish-work" }
+  | { type: "take-break" }
+  | { type: "finish-break" }
+  | { type: "abandon" }
+  | { type: "tick" };
+
 /**
  * @see https://en.wikipedia.org/wiki/Pomodoro_Technique
- *
- * @typedef {'work' | 'short-break' | 'long-break' | 'interaction'} PomodoroTimePeriod
- * @typedef {{
- *   previousPeriod: PomodoroTimePeriod,
- *   currentPeriod: PomodoroTimePeriod,
- *   checkmarks: 0 | 1 | 2 | 3 | 4,
- *   timer: { startedAt: number, remainingTime: number } | null,
- * }} PomodoroState
- * @typedef {{
- *   type: 'start-work',
- * } | {
- *   type: 'finish-work',
- * } | {
- *   type: 'take-break',
- * } | {
- *   type: 'finish-break',
- * } | {
- *   type: 'abandon',
- * } | {
- *   type: 'tick'
- * }} PomodoroAction
- * @param {SettingsValues} settings
- * @returns {React.Reducer<PomodoroState, PomodoroAction>}
  */
 
 export function makePomodoroReducer({
   shortBreakSeconds,
   longBreakSeconds,
   workSeconds,
-}) {
+}: SettingsValues): React.Reducer<
+  PomodoroState,
+  PomodoroAction
+> {
   return function pomodoroReducer(s, action) {
     switch (action.type) {
       case "start-work":
@@ -330,8 +358,7 @@ export function makePomodoroReducer({
   };
 }
 
-/** @type {PomodoroState} */
-export const initialState = {
+export const initialState: PomodoroState = {
   previousPeriod: "interaction",
   currentPeriod: "interaction",
   checkmarks: 0,
@@ -352,10 +379,7 @@ const PomodoroTimer = () => {
     initialState
   );
 
-  /**
-   * @type {import("react").MutableRefObject<NodeJS.Timeout | undefined>}
-   */
-  const interval = useRef();
+  const interval = useRef<NodeJS.Timeout | undefined>();
   useEffect(() => {
     // clean up interval on unmount
     return () => {
@@ -365,7 +389,7 @@ const PomodoroTimer = () => {
     };
   }, []);
 
-  const playAlarmSound = useAlarmSound(
+  const playAlarmSound = useSound(
     "198841__bone666138__analog-alarm-clock.wav"
   );
 
@@ -468,7 +492,11 @@ const PomodoroTimer = () => {
         <Button small onClick={showSettings.toggle}>
           {showSettings.value ? "Hide" : "Show"} Settings
         </Button>
-        <Button small css={{ marginLeft: "1em" }}>
+        <Button
+          small
+          css={{ marginLeft: "1em" }}
+          onClick={() => dispatch({ type: "abandon" })}
+        >
           Abandon and reset timers
         </Button>
       </PomodoroTimerFooter>
