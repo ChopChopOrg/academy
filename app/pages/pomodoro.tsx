@@ -26,8 +26,6 @@ import {
 } from "../src/app";
 import { theme } from "../src/theme";
 
-const WORK_MINUTES = 25;
-
 const {
   colors: { shadow, gray },
 } = theme;
@@ -51,21 +49,28 @@ const LearnMoreSection: React.FC<LearnMoreSectionProps> = props => (
 
 const usePomodoroSettings = () => {
   const persisted = useMemo(() => {
-    return JSON.parse(
+    let json: Record<string, unknown> = JSON.parse(
       (typeof localStorage !== "undefined" &&
         localStorage.getItem("pomodoro-settings")) ||
         "{}"
     );
+    json = typeof json === "object" ? json : {};
+
+    return {
+      shortBreakTime: Number(json.shortBreakTime) || 5,
+      longBreakTime: Number(json.longBreakTime) || 15,
+      workTime: Number(json.workTime) || 25,
+      secondsInsteadOfMinutes: Boolean(
+        json.secondsInsteadOfMinutes
+      ),
+    };
   }, []);
 
-  const shortBreakTime = useInput(
-    persisted.shortBreakTime || 5
-  );
-  const longBreakTime = useInput(
-    persisted.longBreakTime || 15
-  );
+  const shortBreakTime = useInput(persisted.shortBreakTime);
+  const longBreakTime = useInput(persisted.longBreakTime);
+  const workTime = useInput(persisted.workTime);
   const secondsInsteadOfMinutes = useBoolean(
-    persisted.secondsInsteadOfMinutes || false
+    persisted.secondsInsteadOfMinutes
   );
 
   useEffect(() => {
@@ -76,6 +81,7 @@ const usePomodoroSettings = () => {
           JSON.stringify({
             shortBreakTime: shortBreakTime.value,
             longBreakTime: longBreakTime.value,
+            workTime: workTime.value,
             secondsInsteadOfMinutes:
               secondsInsteadOfMinutes.value,
           })
@@ -85,6 +91,7 @@ const usePomodoroSettings = () => {
   }, [
     shortBreakTime.value,
     longBreakTime.value,
+    workTime.value,
     secondsInsteadOfMinutes.value,
   ]);
 
@@ -93,6 +100,7 @@ const usePomodoroSettings = () => {
   return {
     shortBreakTime,
     longBreakTime,
+    workTime,
     secondsInsteadOfMinutes,
     getValues() {
       return {
@@ -100,7 +108,7 @@ const usePomodoroSettings = () => {
           Number(shortBreakTime.value) * modifier,
         longBreakSeconds:
           Number(longBreakTime.value) * modifier,
-        workSeconds: WORK_MINUTES * modifier,
+        workSeconds: Number(workTime.value) * modifier,
       };
     },
   };
@@ -117,6 +125,7 @@ const PomodoroSettings = ({
   shortBreakTime,
   longBreakTime,
   secondsInsteadOfMinutes,
+  workTime,
   getValues: _,
   ...rest
 }: PomodoroSettingsProps) => {
@@ -151,6 +160,16 @@ const PomodoroSettings = ({
           max={30}
           step={1}
           {...longBreakTime.eventBind}
+        />
+      </label>
+      <label>
+        Work:
+        <input
+          type="range"
+          min={20}
+          max={90}
+          step={5}
+          {...workTime.eventBind}
         />
       </label>
       <label>
